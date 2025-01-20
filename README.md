@@ -6,8 +6,8 @@
 - Files are imported and created according to our own naming conventions and production standards, which are managed in [AssetInfo](./Common/AssetInfo.h).
 - Additionally, key strings based on these conventions, as well as important frame and resolution settings, are categorized and managed under [Common](./Common/Common.h).
 
-<img src="./Images/image_preface1.png" width="80%"/>
-<img src="./Images/image_preface2.png" width="80%"/>
+<img src="./Images/image_preface1.png" width="100%"/>
+<img src="./Images/image_preface2.png" width="100%"/>
 
 ## FBX Importer
 - Get files by own naming convention
@@ -44,5 +44,5 @@
 - Check asset data
 
 ## Usage Examples
-<img src="./Images/image_toolUI1.png" width="80%"/>
-<img src="./Images/image_toolUI2.png" width="80%"/>
+<img src="./Images/image_toolUI1.png" width="100%"/>
+<img src="./Images/image_toolUI2.png" width="100%"/>
