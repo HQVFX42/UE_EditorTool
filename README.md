@@ -3,59 +3,45 @@
 ## Preface
 - This is a tool for automating FBX import and Sequence creation for animation production in Unreal Engine.
 - It is developed as an Editor Toolbar Extension Plugin.
+- Files are imported and created according to our own naming conventions and production standards, which are managed in [AssetInfo](./Common/AssetInfo.h).
+- Additionally, key strings based on these conventions, as well as important frame and resolution settings, are categorized and managed under [Common](./Common/Common.h).
 
 <img src="./Images/image_preface1.png" width="100%"/>
 <img src="./Images/image_preface2.png" width="100%"/>
 
 ## FBX Importer
-```cpp
-void TubaNMenuTool::ImportFBX(TArray<FString> path)
-{
-	//`Get all fbx files from specific dir
-	Params::FAssetData assetData;
-	//assetData.GetFBXPath();
-
-	//GetAllPathsFromDir(assetData);
-
-	//`Import fbx files
-	assetData.OutPathArray = path;
-	bool isAssetExist = assetData.OutPathArray.Num() > 0 ? true : false;
-	if (isAssetExist == true)
+- Get files by own naming convention
+	```cpp
+	 AssetInfo::AssetInfo()
+		: prefixAsset()
+		, episodeNumber()
+		, sceneNumber()
+		, cutNumber()
+		, isExtraCut(false)
+		, type()
+		, name()
+		, extension()
 	{
-		InitAssetInfoArray(assetData.OutPathArray);
-		TArray<UAssetImportTask*> importTaskArray = CreateImportTask(AssetInfoArray, true);
-		if (importTaskArray.Num() == 0)
-		{
-			LOG(Warning, TEXT("Import task array is empty"));
-			LOG_SERVER(Warning, TEXT("Import task array is empty"));
-			return;
-		}
-
-		TArray<FString> applyStateArray;
-		for (auto& importTask : importTaskArray)
-		{
-			bool isImportSucceed = IsValid(importTask);
-			if (isImportSucceed == true)
-			{
-				LOG(Display, TEXT("%s : Import succeeded"), *importTask->DestinationName);
-
-				applyStateArray.Add(importTask->DestinationName + Common::ExtensionFbx);
-			}
-			else
-			{
-				LOG(Warning, TEXT("%s : Import failed"), *importTask->DestinationName);
-				LOG_SERVER(Warning, TEXT("%s : Import failed"), *importTask->DestinationName);
-			}
-		}
-		assetTools->ImportAssetTasks(importTaskArray);
-		OnFBXImported.ExecuteIfBound(applyStateArray);
 	}
-}
-```
+	```
+- Import automation to specific folder
+	```cpp
+	void AssetInfo::SetPaths()
+	{
+		episodeDir = episodeNumber + TEXT_SLASH;
+		episodeName = episodeNumber + TEXT_UNDERSCORE;
+		sceneDir = sceneNumber + TEXT_SLASH;
+		sceneName = sceneNumber + TEXT_UNDERSCORE;
+		cutDir = cutNumber + TEXT_SLASH;
+		cutName = cutNumber + TEXT_UNDERSCORE;
+	}
+	```
 
 ## Sequence Generator
+- Create files by own naming convention
 
 ## Packet Manager for Web Server
+- Check asset data
 
 ## Usage Examples
 <img src="./Images/image_toolUI1.png" width="100%"/>
