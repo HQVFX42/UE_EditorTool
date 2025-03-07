@@ -44,6 +44,6 @@
 - Check asset data
 
 ## Usage Examples
-<img src="./Images/image_toolUI0.png" width="100%"/>
+<img src="./Images/image_toolUI0.jpg" width="100%"/>
 <img src="./Images/image_toolUI1.png" width="100%"/>
 <img src="./Images/image_toolUI2.png" width="100%"/>
