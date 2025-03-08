@@ -127,10 +127,19 @@
 	}
  	```
 ## Packet Manager for Web Server
-- Check asset data
+- Check asset data & Collect logs
   	```cpp
+   	void APacketManager::SendUnrealLog(FString verbosity, FString log, FString computerName)
+	{
+		TSharedRef<FJsonObject> requestObj = MakeShared<FJsonObject>();
+		requestObj->SetStringField(EnumToString(EJasonFieldType::Type), EnumToString(EPacketType::UnrealLog));
+		requestObj->SetStringField(EnumToString(EJasonFieldType::Name), computerName);
+		requestObj->SetStringField(EnumToString(EJasonFieldType::Verbosity), verbosity);
+		requestObj->SetStringField(EnumToString(EJasonFieldType::Log), log);
+	
+		SendPacket(requestObj);
+	}
    	```
-- Collecting logs
   	```cpp
    	#pragma once
 	#include "CoreMinimal.h"
