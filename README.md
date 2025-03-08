@@ -36,6 +36,22 @@
 		cutName = cutNumber + TEXT_UNDERSCORE;
 	}
 	```
+ - Bind assets using Enums
+  	```cpp
+   	/**
+	 * Returns name matching enum value, returns empty string if invalid
+	 * 
+	 * @param value
+	 * @return 
+	 */
+	template<typename T>
+	FString EnumToString(const T value)
+	{
+	    FString nameStr = StaticEnum<T>()->GetNameStringByValue(static_cast<__underlying_type(T)>(value));
+	    FString resultStr = nameStr.Len() == 0 ? "" : nameStr;
+	    return resultStr;
+	}
+   	```
 
 ## Sequence Generator
 - Create files by own naming convention
