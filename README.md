@@ -55,7 +55,77 @@
 
 ## Sequence Generator
 - Create files by own naming convention
-
+	```cpp
+ 	void TubaNMenuTool::CreateCutLevelSequence(TSharedRef<AssetInfo>& inAsset)
+	{
+		//`Create New Level Sequence
+		UObject* levelSequence = nullptr;
+	
+		FString assetDir;
+		FString assetName;
+		FString assetPath;
+	
+		Tie(assetDir, assetName) = inAsset->GetCutLevelSequencePath();
+		levelSequence = CreateEmptyLevelSequence(assetDir, assetName);
+		CHECK_EXIT(levelSequence);
+	
+		/** `Add tracks */
+		ULevelSequence* masterSequence = CastChecked<ULevelSequence>(levelSequence);
+		UMovieScene* movieScene = masterSequence->GetMovieScene();
+	
+		const TArray<UMovieSceneTrack*>& masterTrackArray = movieScene->GetMasterTracks();
+		if (masterTrackArray.IsEmpty() == true)
+		{
+			int32 shotDuration = 0;
+	
+			//`Add LS_ANI
+			shotDuration = AddSubSeqToCutSequence(movieScene, inAsset, Common::SuffixAni);
+			movieScene->SetPlaybackRange(Common::AdjPlaybackStart, shotDuration);
+			//`Add LS_FX
+			AddSubSeqToCutSequence(movieScene, inAsset, Common::SuffixEffect);
+			//`Add LS_LGT
+			AddSubSeqToCutSequence(movieScene, inAsset, Common::SuffixLight);
+	
+			//`Create Cine Camera Actor
+			UWorld* currentWorld = GCurrentLevelEditingViewportClient ? GCurrentLevelEditingViewportClient->GetWorld() : nullptr;
+			CHECK_EXIT(currentWorld);
+	
+			ACineCameraActor* newCamera = currentWorld->SpawnActor<ACineCameraActor>();
+			CHECK_EXIT(newCamera);
+	
+			FString newCameraName = FName::NameToDisplayString(ACineCameraActor::StaticClass()->GetFName().ToString(), false);
+			newCameraName = inAsset->GetCameraFBXPath().Value.LeftChop(4).RightChop(4);
+			newCamera->SetActorLabel(newCameraName);		//`Highly important func for determining new spawned asset name.
+	
+			FGuid newGuid = CreateSpawnableToSequence(levelSequence, newCamera);
+			currentWorld->EditorDestroyActor(newCamera, false);
+	
+			MovieSceneToolHelpers::CreateCameraCutSectionForCamera(movieScene, newGuid, 0);
+	
+			/// todo : Get cam fbx file from server till now. may deprecated
+			Tie(assetDir, assetName) = inAsset->GetCameraFBXPath();
+			assetDir = cameraDir;
+			assetPath = assetDir + assetName;
+	
+			//bool isConnected = CheckServerDir(assetDir);
+			bool isFileExist = FPlatformFileManager::Get().GetPlatformFile().FileExists(*assetPath);
+			if (isFileExist == false)
+			{
+				LOG(Error, TEXT("Can not find %s"), *assetPath);
+				LOG_SERVER(Error, TEXT("Can not find %s"), *assetPath);
+				return;
+			}
+	
+			TArray<FMovieSceneBindingProxy> bindingArray;
+			bindingArray.Add(FMovieSceneBindingProxy(newGuid, masterSequence));
+			UMovieSceneUserImportFBXSettings* importFBXSettings = CreateImportCameraOptions();
+	
+			USequencerToolsFunctionLibrary::ImportLevelSequenceFBX(currentWorld, masterSequence, bindingArray, importFBXSettings, assetPath);
+	
+			AdjustKeyTimes(movieScene, newGuid);
+		}
+	}
+ 	```
 ## Packet Manager for Web Server
 - Check asset data
   	```cpp
